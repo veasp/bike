@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="admin/fragments/header :: head"></div>
+
+<body id="page-top">
+
+<div id="wrapper">
+  <div th:replace="admin/fragments/header :: navbar"></div>
+
+  <div class="d-flex flex-column" id="content-wrapper">
+    <div id="content">
+      <div th:replace="admin/fragments/header :: userbar"></div>
+
+      <div class="container-fluid">
+        <div class="d-sm-flex justify-content-between align-items-center mb-4">
+          <h3 class="text-dark mb-0">[[ #{admin.addItemGroup.newGroup} ]]</h3>
+        </div>
+
+        <div class="row r-input">
+          <div class="col">
+
+            <form th:action="@{/admin/add-item-group}" method="post" th:object="${itemGroupDto}" enctype="multipart/form-data">
+
+              <div th:if="${#fields.hasAnyErrors()}" class="card card-error">
+                <div class="card-body">
+                  <h4 class="card-title"><strong>[[ #{admin.addItemGroup.error} ]]</strong></h4>
+                  <p class="card-text" th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>[[ #{admin.addItemGroup.groupName} ]]</label>
+                <input class="form-control no-enter-submit" type="text" th:placeholder="#{admin.addItemGroup.enterGroupName}" th:field="*{groupName}" />
+              </div>
+
+              <div class="form-group">
+                <label>[[ #{admin.addItemGroup.groupDescription} ]]</label>
+                <textarea class="form-control no-enter-submit" type="text" th:placeholder="#{admin.addItemGroup.enterItemGroupDesc}" th:field="*{groupDesc}"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>[[ #{admin.addItemGroup.groupPrice} ]]</label>
+                <input class="form-control no-enter-submit" type="number" placeholder="0" th:field="*{price}" step=".01" />
+              </div>
+
+              <div class="form-group">
+                <h5>[[ #{admin.addItemGroup.groupParameters} ]]</h5>
+
+                <div class="form-row mb-3">
+                  <div class="col-12 col-sm-6">
+                    <input class="form-control no-enter-submit" type="text" th:placeholder="#{admin.addItemGroup.enterParamName}" th:field="*{newInputParamName}">
+                  </div>
+                  <div class="col-12 col-sm-6 pt-3 pt-sm-0">
+                    <button class="btn btn-primary" type="submit" th:formaction="'/admin/add-item-group?action=add-new-param'">[[ #{admin.addItemGroup.addParameter} ]]</button>
+                  </div>
+                </div>
+
+                <div th:each="parameter, paramStat : *{parameters}">
+                  <input type="hidden" th:field="*{parameters[__${paramStat.index}__].paramName}" />
+                  <input type="hidden" th:field="*{parameters[__${paramStat.index}__].paramValues}" />
+
+                  <label class="label-param">
+                    <strong>[[ ${parameter.paramName} ]]</strong>
+                      <button class="btn btn-danger btn-sm" type="submit" th:formaction="'/admin/add-item-group?action=remove-param-' + ${paramStat.index}">[[ #{admin.addItemGroup.parameterDelete} ]]</button>
+                  </label>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <tbody>
+
+                      <tr th:each="paramValue, paramValueStat : *{parameters[__${paramStat.index}__].paramValues}">
+
+                        <input type="hidden" th:field="*{parameters[__${paramStat.index}__].paramValues[__${paramValueStat.index}__]}" />
+                        <td th:text="${paramValue}"></td>
+                        <td><button class="btn btn-danger btn-sm" type="submit" th:formaction="'/admin/add-item-group?action=delete-param-value-' + ${paramStat.index} + '-' + ${paramValueStat.index}">X</button></td>
+                      </tr>
+
+                      <tr>
+                        <td><input class="form-control no-enter-submit" type="text" th:placeholder="#{admin.addItemGroup.enterParamValue}" th:field="*{parameters[__${paramStat.index}__].newParamValue}"></td>
+                        <td><button class="btn btn-success btn-sm" type="submit" th:formaction="'/admin/add-item-group?action=add-param-value-' + ${paramStat.index}">+</button></td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <hr>
+              </div>
+
+              <div class="form-group">
+                <label>[[ #{admin.addItemGroup.groupImage} ]]</label><br>
+                <input id="fileUpload" type="file" accept="image/png, image/jpeg" th:field="*{image}" />
+                <div id="image-preview"></div>
+              </div>
+
+              <div class="form-group d-flex">
+                <button class="btn btn-primary btn-block maxw-50 mt-5" type="submit">[[ #{admin.generic.save} ]]</button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div th:replace="admin/fragments/footer :: footer"></div>
+
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  $("#fileUpload").on('change', function() {
+    var imgPath = $(this)[0].value;
+    var extn = imgPath.substring(imgPath.lastIndexOf('.') + 1).toLowerCase();
+    var image_holder = $("#image-preview");
+    image_holder.empty();
+
+    if (extn == "png" || extn == "jpg" || extn == "jpeg") {
+      if (typeof(FileReader) != "undefined") {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          $("<img />", {
+            "src": e.target.result,
+            "class": "img-prev"
+          }).appendTo(image_holder);
+        }
+        image_holder.show();
+        reader.readAsDataURL($(this)[0].files[0]);
+      }
+    }
+  });
+});
+</script>
+
+<div th:replace="admin/fragments/footer :: javascript"></div>
+
+</body>
+
+</html>

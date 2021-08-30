@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:fragment="head">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>VentRent - [[ ${title} ]]</title>
+  <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+  <link rel="stylesheet" th:href="@{/fonts/fontawesome-all.min.css}">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+
+<!--   fragments header  -->
+<nav th:fragment="navbar" class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
+  <div class="container"><a class="navbar-brand logo" href="/">VentRent</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol"><span class="sr-only"></span><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse"
+         id="navcol">
+      <ul class="nav navbar-nav ml-auto">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" th:classappend="${module == 'home' ? 'active' : ''}" href="/">[[ #{nav.home} ]]</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" th:href="@{/about-us}" th:classappend="${module == 'aboutus' ? 'active' : ''}">[[ #{nav.aboutus} ]]</a>
+        </li>
+
+        <li sec:authorize="isAuthenticated()" class="nav-item" role="presentation">
+          <a class="nav-link" th:href="@{/inquiries}" th:classappend="${module == 'inquiries' ? 'active' : ''}">[[ #{header.reservations} ]]</a>
+        </li>
+
+        <li sec:authorize="isAuthenticated()" class="nav-item" role="presentation">
+          <a class="nav-link" th:href="@{/my-profile}" th:classappend="${module == 'profile' ? 'active' : ''}">[[ #{header.mansProfils} ]]</a>
+        </li>
+
+        <li sec:authorize="hasAnyAuthority('Admin')" class="nav-item" role="presentation">
+          <a class="nav-link" th:href="@{/admin}">[[ #{header.admin} ]]</a>
+        </li>
+
+        <li sec:authorize="isAuthenticated()" class="nav-item pr-2" role="presentation">
+          <a class="nav-link" th:href="@{/cart}" th:classappend="${module == 'cart' ? 'active' : ''}"><i class="fa fa-shopping-cart" style="font-size: 17px;"></i></a>
+        </li>
+
+        <li sec:authorize="isAuthenticated()" class="nav-item pr-2" role="presentation">
+          <a class="nav-link" th:href="@{/logout}"><i class="fa fa-sign-out-alt" style="font-size: 17px;"></i></a>
+        </li>
+
+        <li sec:authorize="!isAuthenticated()" class="nav-item" role="presentation">
+          <a class="nav-link" th:href="@{/register}" th:classappend="${module == 'register' ? 'active' : ''}">[[ #{header.register} ]]</a>
+        </li>
+
+        <li sec:authorize="!isAuthenticated()" class="nav-item" role="presentation">
+          <a class="nav-link" th:href="@{/login}" th:classappend="${module == 'login' ? 'active' : ''}">[[ #{header.login} ]]</a>
+        </li>
+
+        <li class="nav-item dropdown nav-link"><a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false" href="#">[[ ${#strings.toUpperCase(#locale.language)} ]]</a>
+          <div class="dropdown-menu dropdown-menu-right" role="menu">
+            <a class="dropdown-item" role="presentation" href="?lang=en">[[ #{header.English} ]]</a>
+            <a class="dropdown-item" role="presentation" href="?lang=lv">[[ #{header.Latvian} ]]</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<!--    fragments header beidzas -->
+
+</html>

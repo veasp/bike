@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments/header :: head"></div>
+
+<body>
+<div th:replace="fragments/header :: navbar"></div>
+
+<main class="page product-page">
+  <section class="clean-block clean-product dark">
+    <div class="container">
+      <div class="block-heading">
+        <h2 class="text-info">[[ #{item.reserveNow} ]]</h2>
+        <p>[[ #{item.makeParametersandTime} ]]</p>
+      </div>
+      <div class="block-content">
+        <div class="product-info">
+          <div class="row">
+            <div th:if="${itemGroup.image != null}" class="col-md-6">
+              <img th:src="@{${'/assets/item-groups/' + itemGroup.image}}" class="img-fluid">
+            </div>
+            <div th:classappend="${itemGroup.image != null ? 'col-md-6' : 'col-md-12'}">
+              <div class="info">
+                <div th:if="${saved}"  class="card card-success">
+                  <div class="card-body">
+                    <h4 class="card-title">[[ #{item.addedToReservation} ]]</h4>
+                    <p class="card-text">
+                      <a class="b-back mr-2" href="/"><i class="fas fa-arrow-left"></i>[[ #{item.back} ]]</a>
+                      <a class="b-back" href="/cart">[[ #{item.toCart} ]]<i class="fas fa-shopping-cart"></i></a>
+                    </p>
+                  </div>
+                </div>
+
+                <h3 th:text="${itemGroup.groupName}"></h3>
+                <div class="price">
+                  <h3><strong>[[ ${itemGroup.price} > 0 ? ${#numbers.formatDecimal(itemGroup.price, 0, 'COMMA', 2, 'POINT')} : '0' ]][[ #{index.price} ]]</strong></h3>
+                </div>
+                <div>
+                  <p th:text="${itemGroup.groupDesc}" class="p-description"></p>
+                </div>
+                <div>
+
+                  <form th:action="@{/add-to-inquiry}" method="post" th:object="${inquiryItemDto}">
+                    <div th:if="${#fields.hasAnyErrors()}" class="card card-error">
+                      <div class="card-body">
+                        <h4 class="card-title"><strong>[[ #{item.error} ]]</strong></h4>
+                        <p class="card-text" th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
+                      </div>
+                    </div>
+
+                    <input type="hidden" th:field="*{inqItemGroup}" />
+
+                    <div th:if="${inquiryItemDto.paramValue}">
+                      <div th:each="parameter : ${inquiryItemDto.paramValue.entrySet()}" class="form-group">
+                        <label th:for="*{paramValue['__${parameter.key}__']}" th:text="${parameter.key}"></label>
+                        <select class="form-control" th:field="*{paramValue['__${parameter.key}__']}">
+                          <option th:each="iValue : ${inquiryItemDto.allParamValues.get('__${parameter.key}__')}" th:value="${iValue.paramId}">[[ ${iValue.value} ]]</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <button class="btn btn-primary" type="submit"><i class="fa fa-cart-plus"></i>[[ #{item.addToReservation} ]]</button>
+                  </form>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div th:replace="fragments/footer :: footer"></div>
+<div th:replace="fragments/footer :: javascript"></div>
+</body>
+
+</html>

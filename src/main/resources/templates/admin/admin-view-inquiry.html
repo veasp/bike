@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="admin/fragments/header :: head"></div>
+
+<body id="page-top">
+<div id="wrapper">
+    <div th:replace="admin/fragments/header :: navbar"></div>
+
+    <div class="d-flex flex-column" id="content-wrapper">
+        <div id="content">
+            <div th:replace="admin/fragments/header :: userbar"></div>
+
+            <div class="container-fluid">
+                <div class="d-sm-flex justify-content-between align-items-center mb-4">
+                    <h3 class="text-dark mb-0">[[ #{admin.adminViewInquiry.reservations} ]] #[[ ${inquiry.inqId}  ]]</h3>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6 col-w-600">
+                        <h5 class="text-dark p-username">[[ ${inquiry.inquiryUser.name} ]] [[ ${inquiry.inquiryUser.surname} ]]</h5>
+                        <p><em>[[ #{admin.adminViewInquiry.phoneNr} ]] [[ ${inquiry.inquiryUser.phone} ]], [[ #{admin.adminViewInquiry.email} ]]&nbsp;[[ ${inquiry.inquiryUser.email} ]]</em></p>
+                        <p class="p-field"></p>
+                        <p class="p-label">[[ #{admin.adminViewInquiry.status} ]]</p>
+                        <p class="p-field">[[ #{'enumInquiryStatus.' + ${inquiry.inquiryStatus}} ]]</p>
+                        <p class="p-label">[[ #{admin.adminViewInquiry.reservedTime} ]]</p>
+                        <p class="p-field">[[ ${#temporals.format(inquiry.dateFrom, 'dd-MM-yyyy HH:mm')} ]] - [[ ${#temporals.format(inquiry.dateTo, 'dd-MM-yyyy HH:mm')} ]]</p>
+                        <div th:if="${inquiry.inquiryStatus != T(lv.venta.enums.InquiryStatus).FINISHED && inquiry.inquiryStatus != T(lv.venta.enums.InquiryStatus).CANCELLED && inquiry.inquiryStatus != T(lv.venta.enums.InquiryStatus).REJECTED}">
+                            <p class="p-label">[[ #{admin.adminViewInquiry.reservationContent} ]]</p>
+                            <p class="p-field mb-2" th:each="inqItem, itemStat : ${inquiry.requestedItems}">[[ ${inqItem.inqItemGroup.groupName} ]]: <span th:each="itemValue, itemValueStat : ${inquiry.requestedItems[__${itemStat.index}__].paramValue}">[[ ${itemValue.key} ]] - [[ ${itemValue.value} ]][[ (!${itemValueStat.last} ? ', ' : '')]] </span></p>
+                        </div>
+                        <p class="p-label">[[ #{admin.adminViewInquiry.comments} ]]</p>
+                        <p class="p-field">[[ ${inquiry.comments} ]]</p>
+                        <div th:if="${inquiry.inquiryStatus == T(lv.venta.enums.InquiryStatus).FINISHED || inquiry.inquiryStatus == T(lv.venta.enums.InquiryStatus).CANCELLED || inquiry.inquiryStatus == T(lv.venta.enums.InquiryStatus).REJECTED}">
+                            <p class="p-label">[[ #{admin.adminViewInquiry.Report} ]]</p>
+                            <p class="p-field" th:utext="${inquiry.finishedItemReport}"></p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-w-500">
+                        <div th:if="${inquiry.inquiryStatus != T(lv.venta.enums.InquiryStatus).FINISHED && inquiry.inquiryStatus != T(lv.venta.enums.InquiryStatus).CANCELLED && inquiry.inquiryStatus != T(lv.venta.enums.InquiryStatus).REJECTED}" class="row pb-3">
+                            <div class="col-12">
+                                <label class="col-form-label label-param"><strong>[[ #{admin.adminViewInquiry.editStatus} ]]</strong><br></label>
+                            </div>
+
+                            <div class="col">
+                                <div th:if="${inquiry.inquiryStatus == T(lv.venta.enums.InquiryStatus).NEW}">
+                                    <a class="btn btn-success mr-3" role="button" th:href="@{/admin/change-inquiry-status(id=${inquiry.inqId}, status='ACCEPTED')}">[[ #{admin.adminViewInquiry.accept} ]]</a>
+                                    <a class="btn btn-danger" role="button" th:href="@{/admin/change-inquiry-status(id=${inquiry.inqId}, status='REJECTED')}">[[ #{admin.adminViewInquiry.rejected} ]]</a>
+                                </div>
+                                <a th:if="${inquiry.inquiryStatus == T(lv.venta.enums.InquiryStatus).ACTIVE || inquiry.inquiryStatus == T(lv.venta.enums.InquiryStatus).DELAYED}"
+                                    class="btn btn-info mr-3" role="button" th:href="@{/admin/change-inquiry-status(id=${inquiry.inqId}, status='FINISHED')}">[[ #{admin.adminViewInquiry.finished} ]]</a>
+                                <a th:if="${inquiry.inquiryStatus == T(lv.venta.enums.InquiryStatus).ACCEPTED || inquiry.inquiryStatus == T(lv.venta.enums.InquiryStatus).ACTIVE || inquiry.inquiryStatus == T(lv.venta.enums.InquiryStatus).DELAYED}"
+                                    class="btn btn-danger" role="button" th:href="@{/admin/change-inquiry-status(id=${inquiry.inqId}, status='CANCELLED')}">[[ #{admin.adminViewInquiry.toReject} ]]</a>
+                            </div>
+                        </div>
+
+                        <form th:if="${inquiry.inquiryStatus != T(lv.venta.enums.InquiryStatus).FINISHED && inquiry.inquiryStatus != T(lv.venta.enums.InquiryStatus).CANCELLED && inquiry.inquiryStatus != T(lv.venta.enums.InquiryStatus).REJECTED}"
+                            th:action="@{/admin/assign-inq-items}" method="post" th:object="${assignItemsDto}">
+                            <div th:if="${#fields.hasAnyErrors()}" class="card card-error">
+                                <div class="card-body">
+                                    <h4 class="card-title"><strong>[[ #{admin.generic.error} ]]</strong></h4>
+                                    <p class="card-text" th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="hidden" th:field="*{inquiryId}" />
+
+                                <label class="label-param"><strong>[[ #{admin.adminViewInquiry.givenItems} ]]</strong></label>
+
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <tbody>
+                                        <tr th:each="asItem, asItemStat : ${assignItemsDto.assignedItems}">
+                                            <td>
+                                                <a th:href="@{'/admin/edit-item/' + ${asItem.assignItem.itemId}}">[[ ${asItem.assignItem.itemName} ]]</a> (<span th:each="itemValue, itemValueStat : ${assignItemsDto.assignedItems[__${asItemStat.index}__].assignItem.joinItems}">[[ ${itemValue.joinGroupParam.paramName} ]] - [[ ${itemValue.joinParam.value} ]][[ (!${itemValueStat.last} ? ', ' : '')]]</span>)
+                                            </td>
+
+                                            <td><button class="btn btn-danger btn-sm" type="submit" th:formaction="'/admin/assign-inq-items?action=remove-' + ${asItemStat.index}">X</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <select class="form-control" th:field="*{newAssign}">
+                                                    <option th:if="${availableItems}" th:each="newAsItem, newAsItemStat : ${availableItems}" th:value="${newAsItem.itemId}">[[ ${newAsItem.itemName} ]] (<span th:each="itemValue, itemValueStat : ${availableItems[__${newAsItemStat.index}__].joinItems}">[[ ${itemValue.joinGroupParam.paramName} ]] - [[ ${itemValue.joinParam.value} ]][[ (!${itemValueStat.last} ? ', ' : '')]]</span>)</option>
+                                                </select>
+                                            </td>
+
+                                            <td><button class="btn btn-success btn-sm" type="submit">+</button></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <hr>
+                            </div>
+                        </form>
+
+                        <form th:action="@{/admin/edit-inquiry-notes}" method="post" th:object="${submInquiryDto}">
+                            <div th:if="${#fields.hasAnyErrors()}" class="card card-error">
+                                <div class="card-body">
+                                    <h4 class="card-title"><strong>[[ #{admin.generic.error} ]]</strong></h4>
+                                    <p class="card-text" th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="hidden" th:field="*{inquiryId}" />
+
+                                <label>[[ #{admin.adminViewInquiry.notesAboutInquiry} ]]</label>
+                                <textarea class="form-control" th:field="*{adminNotes}"></textarea>
+                            </div>
+                            <div class="form-group d-flex">
+                                <button class="btn btn-primary btn-block maxw-50" type="submit">[[ #{admin.generic.save} ]]</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:replace="admin/fragments/footer :: footer"></div>
+
+    </div>
+</div>
+<div th:replace="admin/fragments/footer :: javascript"></div>
+</body>
+
+</html>

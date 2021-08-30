@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments/header :: head"></div>
+
+<body>
+<div th:replace="fragments/header :: navbar"></div>
+
+<main class="page">
+    <section class="clean-block dark">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">[[ #{my.inquiries} ]]</h2>
+            </div>
+            <div class="block-content">
+                <h5>[[ #{my.inquiries.activeInquiries} ]]</h5>
+                <div class="table-responsive" id="respo-table">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>[[ #{my.inquiries.statuss} ]]</th>
+                            <th>[[ #{my.inquiries.time} ]]</th>
+                            <th>[[ #{my.inquiries.content} ]]</th>
+                            <th>[[ #{my.inquiries.notes} ]]</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="inquiry : ${inquiries}" th:if="${inquiry.inquiryStatus != T(lv.venta.enums.InquiryStatus).FINISHED && inquiry.inquiryStatus != T(lv.venta.enums.InquiryStatus).CANCELLED && inquiry.inquiryStatus != T(lv.venta.enums.InquiryStatus).REJECTED}">
+                            <td th:d-title="#{my.inquiries.statuss}">[[ #{'enumInquiryStatus.' + ${inquiry.inquiryStatus}} ]]</td>
+                            <td th:d-title="#{my.inquiries.time}">[[ ${#temporals.format(inquiry.dateFrom, 'dd-MM-yyyy HH:mm')} ]] - [[ ${#temporals.format(inquiry.dateTo, 'dd-MM-yyyy HH:mm')} ]]</td>
+                            <td th:d-title="#{my.inquiries.content}"><span th:each="inqItem, itemStat : ${inquiry.requestedItems}">[[ ${inqItem.inqItemGroup.groupName} ]]: <span th:each="itemValue, itemValueStat : ${inquiry.requestedItems[__${itemStat.index}__].paramValue}">[[ ${itemValue.key} ]] - [[ ${itemValue.value} ]][[ (!${itemValueStat.last} ? ', ' : '')]] </span></span></td>
+                            <td th:d-title="#{my.inquiries.notes}">[[ ${inquiry.comments} ]]</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h5>[[ #{my.inquiries.inquiryHistory} ]]</h5>
+                <div class="table-responsive" id="respo-table">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>[[ #{my.inquiries.statuss} ]]</th>
+                            <th>[[ #{my.inquiries.time} ]]</th>
+                            <th>[[ #{my.inquiries.content} ]]</th>
+                            <th>[[ #{my.inquiries.notes} ]]</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="inquiry : ${inquiries}" th:if="${inquiry.inquiryStatus == T(lv.venta.enums.InquiryStatus).FINISHED || inquiry.inquiryStatus == T(lv.venta.enums.InquiryStatus).CANCELLED || inquiry.inquiryStatus == T(lv.venta.enums.InquiryStatus).REJECTED}">
+                            <td th:d-title="#{my.inquiries.statuss}">[[ #{'enumInquiryStatus.' + ${inquiry.inquiryStatus}} ]]</td>
+                            <td th:d-title="#{my.inquiries.time}">[[ ${#temporals.format(inquiry.dateFrom, 'dd-MM-yyyy HH:mm')} ]] - [[ ${#temporals.format(inquiry.dateTo, 'dd-MM-yyyy HH:mm')} ]]</td>
+                            <td th:d-title="#{my.inquiries.content}" th:utext="${inquiry.finishedItemReport}"></td>
+                            <td th:d-title="#{my.inquiries.notes}">[[ ${inquiry.comments} ]]</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<div th:replace="fragments/footer :: javascript"></div>
+
+</body>
+
+</html>

@@ -1,0 +1,11 @@
+/.idea/
+/.settings/
+/target/
+/out/
+/src/main/java/lv/venta/tests/
+*.iml
+*.class
+.classpath
+.project
+/assets
+/bin

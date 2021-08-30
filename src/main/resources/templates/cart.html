@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments/header :: head"></div>
+
+<body>
+<div th:replace="fragments/header :: navbar"></div>
+
+<main class="page payment-page">
+    <section class="clean-block payment-form dark">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">[[ #{admin.cart.reservation} ]]</h2>
+                <p>[[ #{admin.cart.cartMessage} ]]</p>
+            </div>
+            <form th:action="@{/submit-inquiry}" method="post" th:object="${inquiryDto}">
+                <div class="products">
+                    <div th:if="${#fields.hasAnyErrors()}" class="card card-error">
+                        <div class="card-body">
+                            <h4 class="card-title"><strong>[[ #{admin.generic.error} ]]</strong></h4>
+                            <p class="card-text" th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
+                        </div>
+                    </div>
+
+                    <h3 class="title">[[ #{admin.cart.reservationContent} ]]</h3>
+                    <div th:each="itemDto, itemStat : *{items}" class="item">
+                        <span class="price">[[ ${itemDto.inqItemGroup.price} > 0 ? ${#numbers.formatDecimal(itemDto.inqItemGroup.price, 0, 'COMMA', 2, 'POINT')} : '0' ]][[ #{index.price} ]]</span>
+                        <p class="item-name">[[ ${itemDto.inqItemGroup.groupName} ]] <button class="btn btn-sm b-remove" type="submit" th:formaction="'/submit-inquiry?action=delete-inq-item-' + ${itemStat.index}"><i class="fas fa-times"></i></button></p>
+                        <p class="item-description"><span th:each="inqItem, inqItemStat : *{items[__${itemStat.index}__].paramValue}">[[ ${inqItem.key} ]] - [[ ${inqItem.value.value} ]][[ (!${inqItemStat.last} ? ', ' : '')]] </span></p>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>[[ #{admin.cart.dateFrom} ]]</label>
+                                <input th:field="*{dateFrom}" class="form-control" type="datetime-local">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>[[ #{admin.cart.dateTo} ]]</label>
+                                <input th:field="*{dateTo}" class="form-control" type="datetime-local">
+                            </div>
+                        </div>
+
+                        <div class="col d-flex justify-content-end">
+                            <div class="form-group">
+                                <button class="btn btn-primary" type="submit" th:formaction="'/submit-inquiry?action=calculate-total'">[[ #{admin.cart.calculate} ]]</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="total">
+                                <span>[[ #{admin.cart.total} ]]</span>
+                                <span class="price">[[ ${total} > 0 ? ${#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')} : '0' ]][[ ${totalText} ]]</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" th:field="*{phone}">
+                <input type="hidden" th:field="*{comments}">
+            </form>
+
+            <form th:action="@{/submit-inquiry}" method="post" th:object="${inquiryDto}">
+                <input type="hidden" th:field="*{dateFrom}">
+                <input type="hidden" th:field="*{dateTo}">
+
+                <div class="card-details">
+                    <h3 class="title">[[ #{admin.cart.phoneAndNotes} ]]</h3>
+                    <div class="form-row">
+                        <div class="col-xl-8">
+                            <div class="form-group">
+                                <label>[[ #{admin.cart.telfnr} ]]</label>
+                                <input th:field="*{phone}" class="form-control" type="text" id="phone">
+                            </div>
+                        </div>
+                        <div class="col-xl-8">
+                            <div class="form-group">
+                                <label>[[ #{admin.cart.notes} ]]</label>
+                                <input th:field="*{comments}" class="form-control" type="text" id="comments">
+                            </div>
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="formCheck-1" required="">
+                                    <label class="form-check-label" for="formCheck-1">[[ #{admin.cart.accept} ]]&nbsp;<a th:href="@{/terms-and-conditions}">[[ #{admin.cart.termsAndConditions} ]]</a></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-block" type="submit">[[ #{admin.cart.reserve} ]]</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+
+<div th:replace="fragments/footer :: footer"></div>
+<div th:replace="fragments/footer :: javascript"></div>
+</body>
+
+</html>

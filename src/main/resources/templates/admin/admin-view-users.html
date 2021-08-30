@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="admin/fragments/header :: head"></div>
+
+<body id="page-top">
+    <div id="wrapper">
+        <div th:replace="admin/fragments/header :: navbar"></div>
+
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <div th:replace="admin/fragments/header :: userbar"></div>
+
+                <div class="container-fluid">
+                    <div class="d-sm-flex justify-content-between align-items-center mb-4">
+                        <h3 class="text-dark mb-0">[[ #{admin.adminViewUsers.allUsers} ]]</h3>
+                    </div>
+
+                    <div class="row">
+                        <div class="col text-right mb-3">
+                            <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#filter">[[ #{admin.adminInquiries.filter} ]]</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="table-responsive">
+                                <table id="respo-table" class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>[[ #{admin.adminViewUsers.ID} ]]</th>
+                                        <th>[[ #{admin.adminViewUsers.Name} ]]</th>
+                                        <th>[[ #{admin.adminViewUsers.Surname} ]]</th>
+                                        <th>[[ #{admin.adminViewUsers.Email} ]]</th>
+                                        <th>[[ #{admin.adminViewUsers.telNr} ]]</th>
+                                        <th>[[ #{admin.adminViewUsers.Type} ]]</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="user: ${userPage.content}">
+                                        <td th:d-title="#{admin.adminViewUsers.ID}" th:text="${user.userId}"></td>
+                                        <td th:d-title="#{admin.adminViewUsers.Name}" th:text="${user.name}"></td>
+                                        <td th:d-title="#{admin.adminViewUsers.Surname}" th:text="${user.surname}"></td>
+                                        <td th:d-title="#{admin.adminViewUsers.Email}" th:text="${user.email}"></td>
+                                        <td th:d-title="#{admin.adminViewUsers.telNr}" th:text="${user.phone}"></td>
+                                        <td th:d-title="#{admin.adminViewUsers.Type}" th:text="${user.type}"></td>
+                                        <td th:d-title="#{admin.adminViewUsers.darbiba}"><a th:href="@{/admin/edit-user/__${user.userId}__}">[[ #{admin.generic.edit} ]]</a></td>
+                                        <td th:d-title="#{admin.adminViewUsers.darbiba}"><a th:href="@{/admin/delete-user/__${user.userId}__}">[[ #{admin.generic.delete} ]]</a></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <nav th:if="${userPage.totalPages > 1}">
+                                <ul class="pagination">
+                                    <li class="page-item">
+                                        <a class="page-link" th:href="@{/admin/view-users(size=${userPage.size}, page=1)}" aria-label="First"><span aria-hidden="true">«</span></a>
+                                    </li>
+
+                                    <li class="page-item" th:each="pageNumber : ${pageNumbers}"
+                                        th:if="${pageNumber == userPage.number + 1 || (pageNumber >= userPage.number - (1 + ( (userPage.number > userPage.totalPages - 3) ? (3 + userPage.number - userPage.totalPages) : 0 )) && pageNumber <= userPage.number + (3 + (userPage.number < 2 ? (2 - userPage.number) : 0 )) )}"
+                                        th:classappend="${pageNumber == userPage.number + 1} ? active">
+                                        <a class="page-link" th:href="@{/admin/view-users(size=${userPage.size}, page=${pageNumber})}" th:text=${pageNumber}></a>
+                                    </li>
+
+                                    <li class="page-item">
+                                        <a class="page-link" th:href="@{/admin/view-users(size=${userPage.size}, page=${userPage.totalPages})}" aria-label="Last"><span aria-hidden="true">»</span></a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal fade" role="dialog" tabindex="-1" id="filter">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <form th:action="@{/admin/view-users-filter}" method="post" th:object="${userFilterDto}">
+                            <div class="modal-header">
+                                <h4 class="modal-title">[[ #{admin.adminInquiries.filterBy} ]]</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button></div>
+                            <div class="modal-body">
+                                <div th:if="${#fields.hasAnyErrors()}" class="card card-error">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><strong>[[ #{admin.generic.error} ]]</strong></h4>
+                                        <p class="card-text" th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
+                                    </div>
+                                </div>
+
+                                <p>[[ #{admin.generic.filter-text} ]]</p>
+
+                                <div class="form-group">
+                                    <label>[[ #{admin.adminViewUsers.Name} ]]</label>
+                                    <input th:field="*{name}" class="form-control" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label>[[ #{admin.adminViewUsers.Surname} ]]</label>
+                                    <input th:field="*{surname}" class="form-control" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label>[[ #{admin.adminViewUsers.Email} ]]</label>
+                                    <input th:field="*{email}" class="form-control" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label>[[ #{admin.adminViewUsers.telNr} ]]</label>
+                                    <input th:field="*{phone}" class="form-control" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label>Tips</label>
+                                    <select th:field="*{userType}" class="form-control">
+                                        <option th:value="all">[[ #{admin.adminViewUsers.AllTypes} ]]</option>
+                                        <option th:each="enumType : ${T(lv.venta.enums.UserType).values()}" th:value="${enumType}" th:text="${enumType}"></option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-primary" type="submit">[[ #{admin.adminInquiries.filter} ]]</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div th:replace="admin/fragments/footer :: footer"></div>
+
+        </div>
+    </div>
+    <div th:replace="admin/fragments/footer :: javascript"></div>
+</body>
+
+</html>

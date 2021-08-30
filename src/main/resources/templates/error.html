@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments/header :: head"></div>
+
+<body>
+<div th:replace="fragments/header :: navbar"></div>
+
+<main class="page login-page">
+    <section class="clean-block dark">
+        <div class="container d-flex justify-content-center">
+            <div class="col col-w-600 block-heading">
+                <div class="card card-error">
+                    <div class="card-body">
+                        <h4 class="card-title"><strong>[[ #{error.errorMessage} ]]</strong></h4>
+                        	<p class="card-text" th:if="${errorMessage != null && errorMessage != ''}">[[ ${errorMessage} ]]</p>
+							<p class="card-text" th:unless="${errorMessage != null && errorMessage != ''}">[[ #{error.unknown} ]]</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div th:replace="fragments/footer :: footer"></div>
+<div th:replace="fragments/footer :: javascript"></div>
+</body>
+
+</html>

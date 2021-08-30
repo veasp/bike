@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="admin/fragments/header :: head"></div>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+
+<body id="page-top">
+
+<div id="wrapper">
+  <div th:replace="admin/fragments/header :: navbar"></div>
+
+  <div class="d-flex flex-column" id="content-wrapper">
+    <div id="content">
+      <div th:replace="admin/fragments/header :: userbar"></div>
+
+      <div class="container-fluid">
+
+        <div class="d-sm-flex justify-content-between align-items-center mb-4">
+          <h3 class="text-dark mb-0">[[ #{admin.adminSettings.settings} ]]</h3>
+        </div>
+
+        <div class="row r-input-lang">
+          <div class="col">
+            <form th:action="@{/admin/edit-settings}" method="post" th:object="${settingsDto}">
+              <div class="form-group">
+                <label for="rules">[[ #{admin.settings.Terms} ]]</label>
+                <textarea th:field="*{rules}" type="text" rows="4" id="rules" th:placeholder="#{admin.settings.content}" class="form-control" autocomplete="off"></textarea>
+              </div>
+
+              <div class="form-group">
+                <button class="btn btn-primary" type="submit">[[ #{admin.generic.save} ]]</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="row r-input-lang">
+          <div class="col">
+            <form th:action="@{/admin/edit-settings}" method="post" th:object="${settingsDto}">
+              <div class="form-group">
+                <label for="aboutUs">[[ #{admin.settings.aboutus} ]]</label>
+                <textarea th:field="*{aboutUs}" type="text" rows="4" id="aboutUs" th:placeholder="#{admin.settings.content}" class="form-control" autocomplete="off"></textarea>
+              </div>
+
+              <div class="form-group">
+                <button class="btn btn-primary" type="submit">[[ #{admin.generic.save} ]]</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="row r-input-lang">
+          <div class="col">
+            <form th:action="@{/admin/edit-settings}" method="post" th:object="${settingsDto}">
+              <div class="form-group">
+                <label for="emailAccepted">[[ #{admin.settings.acceptedReservationEmail} ]]</label>
+                <textarea th:field="*{emailAccepted}" type="text" rows="4" id="emailAccepted" th:placeholder="#{admin.settings.content}" class="form-control" autocomplete="off"></textarea>
+              </div>
+
+              <div class="form-group">
+                <button class="btn btn-primary" type="submit">[[ #{admin.generic.save} ]]</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="row r-input-lang">
+          <div class="col">
+            <form th:action="@{/admin/edit-settings}" method="post" th:object="${settingsDto}">
+              <div class="form-group">
+                <label for="emailRejected">[[ #{admin.settings.rejectedReservationEmail} ]]</label>
+                <textarea th:field="*{emailRejected}" type="text" rows="4" id="emailRejected" th:placeholder="#{admin.settings.content}" class="form-control" autocomplete="off"></textarea>
+              </div>
+
+              <div class="form-group">
+                <button class="btn btn-primary" type="submit">[[ #{admin.generic.save} ]]</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="row r-input-lang">
+          <div class="col">
+            <form th:action="@{/admin/edit-settings}" method="post" th:object="${settingsDto}">
+              <div class="form-group">
+                <label for="emailNewInquiry">[[ #{admin.settings.newAdminReservationEmail} ]]</label>
+                <textarea th:field="*{emailNewInquiry}"  type="text" rows="4" id="emailNewInquiry" th:placeholder="#{admin.settings.content}" class="form-control" autocomplete="off"></textarea>
+              </div>
+
+              <div class="form-group">
+                <button class="btn btn-primary" type="submit">[[ #{admin.generic.save} ]]</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+
+        <div class="row r-input-lang">
+          <div class="col">
+            <h4 class="pt-4 pb-3">[[ #{admin.adminSettings.translateNews} ]]</h4>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Key</th>
+                    <th th:each="language : ${languages}" th:text="${language}" style="min-width: 150px"></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                <tr th:each="dto, dtoStat : ${dtoList}">
+
+                  <td th:text="${dto.key}"></td>
+                  <td th:each="entity : *{dto.langEntities}" th:text="${entity.content}"></td>
+
+                  <td>
+                    <a th:href="@{${'/admin/edit-locale/' + dtoStat.index}}" class="btn btn-primary">[[ #{admin.generic.edit} ]]</a>
+                  </td>
+
+                  <td>
+                    <a th:href="@{${'/admin/delete-locale/' + dto.key}}" class="btn btn-danger">[[ #{admin.generic.delete} ]]</a>
+                  </td>
+
+                </tr>
+                <tr></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div th:replace="admin/fragments/footer :: footer"></div>
+
+  </div>
+</div>
+
+<div th:replace="admin/fragments/footer :: javascript"></div>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('#rules').summernote({
+    height: 400
+  });
+
+  $('#aboutUs').summernote({
+    height: 400
+  });
+
+  $('#emailAccepted').summernote({
+    height: 200
+  });
+
+  $('#emailRejected').summernote({
+    height: 200
+  });
+
+  $('#emailNewInquiry').summernote({
+    height: 200
+  });
+});
+</script>
+
+</body>
+
+</html>

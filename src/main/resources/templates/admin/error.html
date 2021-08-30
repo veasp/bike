@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="admin/fragments/header :: head"></div>
+
+<body id="page-top">
+<div id="wrapper">
+    <div th:replace="admin/fragments/header :: navbar"></div>
+
+    <div class="d-flex flex-column" id="content-wrapper">
+        <div id="content">
+            <div th:replace="admin/fragments/header :: userbar"></div>
+
+            <div class="container-fluid">
+                <h3>[[ #{admin.error.errorMessage} ]]</h3>
+                <p th:text="${errorMessage}" ></p>
+            </div>
+        </div>
+
+        <div th:replace="admin/fragments/footer :: footer"></div>
+
+    </div>
+</div>
+
+<div th:replace="admin/fragments/footer :: javascript"></div>
+</body>
+
+</html>

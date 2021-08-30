@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments/header :: head"></div>
+
+<body>
+<div th:replace="fragments/header :: navbar"></div>
+
+<main class="page">
+    <section class="clean-block clean-form dark">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">[[ #{registration.register} ]]</h2>
+                <p>[[ #{registration.needToRegisterToReserve} ]]</p>
+            </div>
+            <form th:action="@{/register}" th:object="${userDto}" method="POST" enctype="utf8">
+                <div th:if="${#fields.hasAnyErrors()}" class="card card-error">
+                    <div class="card-body">
+                        <h4 class="card-title"><strong>[[ #{registration.error} ]]</strong></h4>
+                        <p class="card-text" th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>[[ #{registration.name} ]]</label>
+                    <input class="form-control item" type="text" name="firstName" th:field="*{firstName}"/>
+                </div>
+                <div class="form-group">
+                    <label>[[ #{registration.surname} ]]</label>
+                    <input class="form-control item" type="text" name="lastName" th:field="*{lastName}"/>
+                </div>
+                <div class="form-group">
+                    <label>[[ #{registration.email} ]]</label>
+                    <input class="form-control item" type="email" name="email" th:field="*{email}"/>
+                </div>
+                <div class="form-group">
+                    <label>[[ #{registration.password} ]]</label>
+                    <input class="form-control item" type="password" name="password" th:field="*{password}"/>
+                </div>
+                <div class="form-group">
+                    <label>[[ #{registration.passwordRepeat} ]]</label>
+                    <input class="form-control item" type="password" name="matchingPassword" th:field="*{matchingPassword}"/>
+                </div>
+
+                <button class="btn btn-primary btn-block" type="submit">[[ #{registration.register} ]]</button>
+            </form>
+        </div>
+    </section>
+</main>
+<div th:replace="fragments/footer :: footer"></div>
+<div th:replace="fragments/footer :: javascript"></div>
+</body>
+
+</html>

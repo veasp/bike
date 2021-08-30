@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="admin/fragments/header :: head"></div>
+
+<body id="page-top">
+    <div id="wrapper">
+        <div th:replace="admin/fragments/header :: navbar"></div>
+
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <div th:replace="admin/fragments/header :: userbar"></div>
+
+                <div class="container-fluid">
+                    <div class="d-sm-flex justify-content-between align-items-center mb-4">
+                        <h3 class="text-dark mb-0">[[ #{admin.adminViewItems.allItems} ]]</h3>
+                    </div>
+                    <div class="row justify-content-end">
+                        <div class="col">
+                            <form th:action="@{/admin/add-item}" method="post" th:object="${filterDto}" class="d-flex">
+                                <div class="form-group">
+                                    <select th:field="*{itemGroup}" class="form-control">
+                                        <option th:each="iItemGroup : ${itemGroups}" th:value="${iItemGroup.groupId}">[[ ${iItemGroup.groupName} ]]</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-primary ml-3" type="submit">[[ #{admin.adminViewItems.addItems} ]]</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-sm-6 col-md-6 col-lg-5 col-xl-4 text-right">
+                            <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#filter">[[ #{admin.adminInquiries.filter} ]]</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="table-responsive">
+                                <table id="respo-table" class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>[[ #{admin.adminViewItems.ID} ]]</th>
+                                        <th>[[ #{admin.adminViewItems.Name} ]]</th>
+                                        <th>[[ #{admin.adminViewItems.Group} ]]</th>
+                                        <th>[[ #{admin.adminViewItems.quantity} ]]</th>
+                                        <th>[[ #{admin.adminViewItems.accessability} ]]</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="item: ${itemPage.content}">
+                                        <td th:d-title="#{admin.adminViewItems.ID}" th:text="${item.itemId}"></td>
+                                        <td th:d-title="#{admin.adminViewItems.Name}" th:text="${item.itemName}"></td>
+                                        <td th:d-title="#{admin.adminViewItems.Group}" th:text="${item.itemGroup.groupName}"></td>
+                                        <td th:d-title="#{admin.adminViewItems.quantity}" th:text="${item.quantity}"></td>
+                                        <td th:d-title="#{admin.adminViewItems.accessability}" th:text="#{'enumItemStatus.' + ${item.status}}"></td>
+                                        <td th:d-title="#{admin.adminViewItems.action}"><a th:href="@{/admin/edit-item/__${item.itemId}__}">[[ #{admin.generic.edit} ]]</a></td>
+                                        <td th:d-title="#{admin.adminViewItems.action}"><a th:href="@{/admin/delete-item/__${item.itemId}__}">[[ #{admin.generic.delete} ]]</a></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <nav th:if="${itemPage.totalPages > 1}">
+                                <ul class="pagination">
+                                    <li class="page-item">
+                                        <a class="page-link" th:href="@{/admin/view-items(size=${itemPage.size}, page=1)}" aria-label="First"><span aria-hidden="true">«</span></a>
+                                    </li>
+
+                                    <li class="page-item" th:each="pageNumber : ${pageNumbers}"
+                                        th:if="${pageNumber == itemPage.number + 1 || (pageNumber >= itemPage.number - (1 + ( (itemPage.number > itemPage.totalPages - 3) ? (3 + itemPage.number - itemPage.totalPages) : 0 )) && pageNumber <= itemPage.number + (3 + (itemPage.number < 2 ? (2 - itemPage.number) : 0 )) )}"
+                                        th:classappend="${pageNumber == itemPage.number + 1} ? active">
+                                        <a class="page-link" th:href="@{/admin/view-items(size=${itemPage.size}, page=${pageNumber})}" th:text=${pageNumber}></a>
+                                    </li>
+
+                                    <li class="page-item">
+                                        <a class="page-link" th:href="@{/admin/view-items(size=${itemPage.size}, page=${itemPage.totalPages})}" aria-label="Last"><span aria-hidden="true">»</span></a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" role="dialog" tabindex="-1" id="filter">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <form th:action="@{/admin/view-items-filter}" method="post" th:object="${itemFilterDto}">
+                            <div class="modal-header">
+                                <h4 class="modal-title">[[ #{admin.adminInquiries.filterBy} ]]</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button></div>
+                            <div class="modal-body">
+                                <div th:if="${#fields.hasAnyErrors()}" class="card card-error">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><strong>[[ #{admin.generic.error} ]]</strong></h4>
+                                        <p class="card-text" th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
+                                    </div>
+                                </div>
+
+                                <p>[[ #{admin.generic.filter-text} ]]</p>
+
+                                <div class="form-group">
+                                    <label>[[ #{admin.adminViewItems.Name} ]]</label>
+                                    <input th:field="*{itemName}" class="form-control" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label>[[ #{admin.adminViewItems.Group} ]]</label>
+                                    <select th:field="*{itemGroup}" class="form-control">
+                                        <option th:value="all">[[ #{admin.adminViewItems.allGroups} ]]</option>
+                                        <option th:each="iItemGroup : ${itemGroups}" th:value="${iItemGroup.groupName}" th:text="${iItemGroup.groupName}"></option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>[[ #{admin.adminViewItems.accessability} ]]</label>
+                                    <select th:field="*{status}" class="form-control">
+                                        <option th:value="all">[[ #{admin.adminViewItems.allAccessability} ]]</option>
+                                        <option th:each="enumType : ${T(lv.venta.enums.ItemStatus).values()}" th:value="${enumType}" th:text="#{'enumItemStatus.' + ${enumType}}"></option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-primary" type="submit">[[ #{admin.adminInquiries.filter} ]]</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div th:replace="admin/fragments/footer :: footer"></div>
+
+        </div>
+    </div>
+    <div th:replace="admin/fragments/footer :: javascript"></div>
+</body>
+
+</html>

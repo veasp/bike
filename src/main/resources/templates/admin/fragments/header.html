@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>VentRent - [[ ${title} ]]</title>
+  <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap5.min.css}">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+  <link rel="stylesheet" th:href="@{/fonts/fontawesome-all.min.css}">
+  <link rel="stylesheet" th:href="@{/css/styles-admin.css}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+
+<!--   fragments header  -->
+<nav th:fragment="navbar" class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 toggled">
+  <div class="container-fluid d-flex flex-column p-0">
+    <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+      <div class="sidebar-brand-icon rotate-n-15"></div>
+      <div class="sidebar-brand-text mx-3"><span>Ventrent</span></div>
+    </a>
+    <hr class="sidebar-divider my-0">
+    <ul class="nav navbar-nav text-light" id="accordionSidebar">
+      <li class="nav-item" role="presentation"><a class="nav-link" href="/"><i class="fas fa-arrow-left"></i><span>[[ #{admin.header.backToHome} ]]</span></a></li>
+      <li class="nav-item" role="presentation"><a class="nav-link" th:href="@{/admin}" th:classappend="${module == 'admin/home' ? 'active' : ''}"><i class="fas fa-tachometer-alt"></i><span>[[ #{admin.header.home} ]]</span></a></li>
+      <li class="nav-item" role="presentation"><a class="nav-link" th:href="@{/admin/view-item-groups}" th:classappend="${module == 'admin/edit-item-groups' ? 'active' : ''}"><i class="fas fa-layer-group"></i><span>[[ #{admin.header.itemgroups} ]]</span></a></li>
+      <li class="nav-item" role="presentation"><a class="nav-link" th:href="@{/admin/view-items}" th:classappend="${module == 'admin/edit-items' ? 'active' : ''}"><i class="fas fa-basketball-ball"></i><span>[[ #{admin.header.items} ]]</span></a></li>
+      <li class="nav-item" role="presentation"><a class="nav-link" th:href="@{/admin/view-users}" th:classappend="${module == 'admin/edit-users' ? 'active' : ''}"><i class="fas fa-user"></i><span>[[ #{admin.header.users} ]]</span></a></li>
+      <li class="nav-item" role="presentation"><a class="nav-link" th:href="@{/admin/view-inquiries}" th:classappend="${module == 'admin/edit-inquiries' ? 'active' : ''}"><i class="fas fa-quote-left"></i><span>[[ #{admin.header.reservations} ]]</span></a></li>
+      <li class="nav-item" role="presentation"><a class="nav-link" th:href="@{/admin/settings}" th:classappend="${module == 'admin/settings' ? 'active' : ''}"><i class="fas fa-cog"></i><span>[[ #{admin.header.settings} ]]</span></a></li>
+    </ul>
+  </div>
+</nav>
+<!--    fragments header beidzas -->
+
+<!--    fragments userbar     -->
+<nav th:fragment="userbar" class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+  <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+    <ul class="nav navbar-nav flex-nowrap ml-auto">
+      <li class="nav-item dropdown no-arrow" role="presentation">
+        <li class="nav-item dropdown no-arrow">
+          <a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#">
+            <span class="d-none d-lg-inline mr-2 text-gray-600 small">[[ ${#request.userPrincipal.principal.fullName} ]]</span>
+            <img class="border rounded-circle img-profile" th:src="@{/img/avatars/avatar.jpg}">
+          </a>
+          <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in" role="menu">
+            <a class="dropdown-item" role="presentation" href="/my-profile"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i> [[ #{admin.userbar.profile} ]]</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" role="presentation" href="/logout"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i> [[ #{admin.userbar.logout} ]]</a>
+          </div>
+        </li>
+      </li>
+    </ul>
+  </div>
+</nav>
+<!--   fragments userbar beidzas     -->
+
+</html>

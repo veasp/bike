@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments/header :: head"></div>
+
+<body>
+<div th:replace="fragments/header :: navbar"></div>
+
+<main class="page">
+  <section class="clean-block dark">
+    <div class="container">
+      <div class="block-heading">
+        <h2 class="text-info">[[ #{about-us} ]]</h2>
+      </div>
+
+      <div class="block-content" th:utext="${aboutUs}"></div>
+    </div>
+  </section>
+</main>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<div th:replace="fragments/footer :: javascript"></div>
+
+</body>
+
+</html>

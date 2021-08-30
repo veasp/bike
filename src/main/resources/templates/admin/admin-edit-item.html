@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="admin/fragments/header :: head"></div>
+
+<body id="page-top">
+
+<div id="wrapper">
+  <div th:replace="admin/fragments/header :: navbar"></div>
+
+  <div class="d-flex flex-column" id="content-wrapper">
+    <div id="content">
+      <div th:replace="admin/fragments/header :: userbar"></div>
+
+      <div class="container-fluid">
+        <div class="d-sm-flex justify-content-between align-items-center mb-4">
+          <h3 class="text-dark mb-0">[[ #{admin.editItem.newItem} + ' ' + ${itemDto.itemGroup.groupName} ]]</h3>
+        </div>
+
+        <div class="row r-input">
+          <div class="col">
+
+            <form th:action="@{/admin/edit-item}" method="post" th:object="${itemDto}" enctype="multipart/form-data">
+
+              <input type="hidden" th:field="*{itemId}" />
+
+              <div th:if="${#fields.hasAnyErrors()}" class="card card-error">
+                <div class="card-body">
+                  <h4 class="card-title"><strong>[[ #{admin.editItem.error} ]]</strong></h4>
+                  <p class="card-text" th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
+                </div>
+              </div>
+
+              <input type="hidden" th:field="*{itemGroup}" />
+
+              <div th:if="${itemDto.paramValue}">
+                <div th:each="parameter : ${itemDto.paramValue.entrySet()}" class="form-group">
+                  <label th:for="*{paramValue['__${parameter.key}__']}" th:text="${parameter.key}"></label>
+                  <select class="form-control" th:field="*{paramValue['__${parameter.key}__']}">
+                    <option th:each="iValue : ${itemDto.allParamValues.get('__${parameter.key}__')}" th:value="${iValue.paramId}">[[ ${iValue.value} ]]</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>[[ #{admin.editItem.name} ]]</label>
+                <input class="form-control" type="text" th:placeholder="#{admin.addItem.enterItemName}" th:field="*{itemName}" />
+              </div>
+
+              <div class="form-group">
+                <label>[[ #{admin.editItem.quantity} ]]</label>
+                <input class="form-control" type="number" placeholder="0" th:field="*{quantity}" />
+              </div>
+
+              <div class="form-group">
+                <label>[[ #{admin.editItem.status} ]]</label>
+                <select class="form-control" th:field="*{status}" required="">
+                  <option th:each="enumType : ${T(lv.venta.enums.ItemStatus).values()}" th:value="${enumType}" th:text="#{'enumItemStatus.' + ${enumType}}"></option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>[[ #{admin.editItem.picture} ]]</label><br>
+                <input id="fileUpload" type="file" accept="image/png, image/jpeg" th:field="*{image}" />
+                <input type="hidden" th:field="*{imageSrc}" />
+                <div id="image-preview">
+                  <button th:if="${itemDto.imageSrc != null}" class="btn btn-danger btn-sm mt-3" type="submit" th:formaction="'/admin/edit-item?action=delete-image'">[[ #{admin.editItem.delete} ]]</button>
+                  <br>
+                  <img th:if="${itemDto.imageSrc != null}" th:src="@{${'/assets/items/' + itemDto.imageSrc}}" class="img-prev">
+                </div>
+              </div>
+
+              <div class="form-group d-flex">
+                <button class="btn btn-primary btn-block maxw-50 mt-5" type="submit">[[ #{admin.generic.save} ]]</button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div th:replace="admin/fragments/footer :: footer"></div>
+
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  $("#fileUpload").on('change', function() {
+    var imgPath = $(this)[0].value;
+    var extn = imgPath.substring(imgPath.lastIndexOf('.') + 1).toLowerCase();
+    var image_holder = $("#image-preview");
+    image_holder.empty();
+
+    if (extn == "png" || extn == "jpg" || extn == "jpeg") {
+      if (typeof(FileReader) != "undefined") {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          $("<img />", {
+            "src": e.target.result,
+            "class": "img-prev"
+          }).appendTo(image_holder);
+        }
+        image_holder.show();
+        reader.readAsDataURL($(this)[0].files[0]);
+      }
+    }
+  });
+});
+</script>
+
+<div th:replace="admin/fragments/footer :: javascript"></div>
+
+</body>
+
+</html>
