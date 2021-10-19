@@ -4,6 +4,7 @@ import lv.venta.models.LanguageEntity;
 import lv.venta.repositories.LanguageRepo;
 import lv.venta.services.impl.LanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +33,7 @@ import java.util.Properties;
 
 @Configuration
 @EnableScheduling
-public class ApplicationConfig implements WebMvcConfigurer {
+public class ApplicationConfig extends WebMvcAutoConfiguration implements WebMvcConfigurer {
 
     @Autowired
     private Environment env;
