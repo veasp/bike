@@ -29,7 +29,8 @@ public class Item {
     @Column
     private ItemStatus status = ItemStatus.HIDDEN;
 
-    @Column(length = 64)
+    @Column
+    @Lob
     private String image;
 
     @ManyToOne

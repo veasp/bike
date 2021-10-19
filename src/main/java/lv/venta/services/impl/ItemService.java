@@ -1,17 +1,11 @@
 package lv.venta.services.impl;
 
-import com.google.gson.Gson;
-import lv.venta.enums.InquiryStatus;
 import lv.venta.enums.ItemStatus;
-import lv.venta.enums.UserType;
 import lv.venta.models.*;
 import lv.venta.models.dto.ItemDto;
 import lv.venta.models.dto.ItemFilterDto;
-import lv.venta.models.dto.ItemGroupDto;
-import lv.venta.models.dto.ItemGroupParamDto;
 import lv.venta.repositories.*;
 import lv.venta.services.IItemService;
-import lv.venta.utils.FileUploadUtil;
 import lv.venta.utils.MessageLocale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -95,16 +89,9 @@ public class ItemService implements IItemService {
 
         // If image is given
         if (itemDto.getImage() != null && itemDto.getImage().getOriginalFilename() != null && !itemDto.getImage().isEmpty()) {
-            String fileName = "" + item.getItemId() + "-" + System.currentTimeMillis() + itemDto.getImage().getOriginalFilename().substring(itemDto.getImage().getOriginalFilename().lastIndexOf("."));
-            String uploadDir = "assets/items/";
+            String image = Base64.getEncoder().encodeToString(itemDto.getImage().getBytes());
 
-            try {
-                FileUploadUtil.saveFile(uploadDir, fileName, itemDto.getImage());
-            } catch (IOException e) {
-                throw new Exception(messageLocale.getMessage("error.failed-file-upload"));
-            }
-
-            item.setImage(fileName);
+            item.setImage(image);
         }
 
         item = itemRepo.save(item);
@@ -144,20 +131,9 @@ public class ItemService implements IItemService {
 
         // If image is given
         if (itemDto.getImage() != null && !itemDto.getImage().isEmpty() && itemDto.getImage().getOriginalFilename() != null) {
-            if (itemDto.getImageSrc() != null && !itemDto.getImageSrc().isBlank()) {
-                FileUploadUtil.deleteFile("assets/items/", item.getImage());
-            }
+            String image = Base64.getEncoder().encodeToString(itemDto.getImage().getBytes());
 
-            String fileName = "" + item.getItemId() + "-" + System.currentTimeMillis() + itemDto.getImage().getOriginalFilename().substring(itemDto.getImage().getOriginalFilename().lastIndexOf("."));
-            String uploadDir = "assets/items/";
-
-            try {
-                FileUploadUtil.saveFile(uploadDir, fileName, itemDto.getImage());
-            } catch (IOException e) {
-                throw new Exception(messageLocale.getMessage("error.failed-file-upload"));
-            }
-
-            item.setImage(fileName);
+            item.setImage(image);
         // Thymeleaf handles null fields weirdly...
         } else if (itemDto.getImageSrc().isBlank()) {
             item.setImage(null);

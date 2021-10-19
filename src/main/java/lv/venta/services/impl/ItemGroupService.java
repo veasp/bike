@@ -1,7 +1,5 @@
 package lv.venta.services.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import lv.venta.models.*;
 import lv.venta.models.dto.ItemGroupDto;
 import lv.venta.models.dto.ItemGroupFilterDto;
@@ -10,7 +8,6 @@ import lv.venta.repositories.GroupParameterRepo;
 import lv.venta.repositories.ItemGroupRepo;
 import lv.venta.repositories.ParameterRepo;
 import lv.venta.services.IItemGroupService;
-import lv.venta.utils.FileUploadUtil;
 import lv.venta.utils.MessageLocale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,11 +15,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
@@ -79,16 +75,10 @@ public class ItemGroupService implements IItemGroupService {
 
         // Saves image if provided
         if (itemGroupDto.getImage() != null && itemGroupDto.getImage().getOriginalFilename() != null && !itemGroupDto.getImage().isEmpty()) {
-            String fileName = "" + itemGroup.getGroupId() + "-" + System.currentTimeMillis() + itemGroupDto.getImage().getOriginalFilename().substring(itemGroupDto.getImage().getOriginalFilename().lastIndexOf("."));
-            String uploadDir = "assets/item-groups/";
+//            String fileName = "" + itemGroup.getGroupId() + "-" + System.currentTimeMillis() + itemGroupDto.getImage().getOriginalFilename().substring(itemGroupDto.getImage().getOriginalFilename().lastIndexOf("."));
+            String image = Base64.getEncoder().encodeToString(itemGroupDto.getImage().getBytes());
 
-            try {
-                FileUploadUtil.saveFile(uploadDir, fileName, itemGroupDto.getImage());
-            } catch (IOException e) {
-                throw new Exception(messageLocale.getMessage("error.failed-file-upload"));
-            }
-
-            itemGroup.setImage(fileName);
+            itemGroup.setImage(image);
             itemGroupRepo.save(itemGroup);
         }
 
@@ -202,21 +192,9 @@ public class ItemGroupService implements IItemGroupService {
 
         // Updates image if given
         if (itemGroupDto.getImage() != null && itemGroupDto.getImage().getOriginalFilename() != null && !itemGroupDto.getImage().isEmpty()) {
-            // Deletes old one
-            if (itemGroupDto.getImageSrc() != null && !itemGroupDto.getImageSrc().isBlank()) {
-                FileUploadUtil.deleteFile("assets/item-groups/", itemGroup.getImage());
-            }
+            String image = Base64.getEncoder().encodeToString(itemGroupDto.getImage().getBytes());
 
-            String fileName = "" + itemGroup.getGroupId() + "-" + System.currentTimeMillis() + itemGroupDto.getImage().getOriginalFilename().substring(itemGroupDto.getImage().getOriginalFilename().lastIndexOf("."));
-            String uploadDir = "assets/item-groups/";
-
-            try {
-                FileUploadUtil.saveFile(uploadDir, fileName, itemGroupDto.getImage());
-            } catch (IOException e) {
-                throw new Exception(messageLocale.getMessage("error.failed-file-upload"));
-            }
-
-            itemGroup.setImage(fileName);
+            itemGroup.setImage(image);
         } else if (itemGroupDto.getImageSrc() == null || itemGroupDto.getImageSrc().isBlank()) {
             itemGroup.setImage(null);
         }
@@ -235,10 +213,6 @@ public class ItemGroupService implements IItemGroupService {
             itemGroupRepo.delete(itemGroup);
         } catch (Exception e) {
             throw new Exception(messageLocale.getMessage("error.deleteItemGroupInquiriesFirst"));
-        }
-
-        if (itemGroup.getImage() != null && !FileUploadUtil.deleteFile("assets/item-groups/", itemGroup.getImage())) {
-            throw new Exception("{error.failed-file-delete}");
         }
     }
 }

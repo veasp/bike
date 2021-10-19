@@ -66,7 +66,7 @@
                 <div id="image-preview">
                   <button th:if="${itemDto.imageSrc != null}" class="btn btn-danger btn-sm mt-3" type="submit" th:formaction="'/admin/edit-item?action=delete-image'">[[ #{admin.editItem.delete} ]]</button>
                   <br>
-                  <img th:if="${itemDto.imageSrc != null}" th:src="@{${'/assets/items/' + itemDto.imageSrc}}" class="img-prev">
+                  <img th:if="${itemDto.imageSrc != null}" th:src="|data:image/png;base64,${itemDto.imageSrc}|" class="img-prev">
                 </div>
               </div>
 

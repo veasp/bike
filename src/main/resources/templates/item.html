@@ -17,7 +17,7 @@
         <div class="product-info">
           <div class="row">
             <div th:if="${itemGroup.image != null}" class="col-md-6">
-              <img th:src="@{${'/assets/item-groups/' + itemGroup.image}}" class="img-fluid">
+              <img th:src="|data:image/png;base64,${itemGroup.image}|" class="img-fluid">
             </div>
             <div th:classappend="${itemGroup.image != null ? 'col-md-6' : 'col-md-12'}">
               <div class="info">

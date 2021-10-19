@@ -42,7 +42,7 @@
                             <h3 th:text="${itemGroup.groupName}"></h3>
                         </div>
                         <a th:if="${itemGroup.image != null}" th:href="@{'/item/' + ${itemGroup.groupId}}">
-                            <img th:src="@{${'/assets/item-groups/' + itemGroup.image}}" class="img-fluid">
+                            <img th:src="|data:image/png;base64,${itemGroup.image}|" class="img-fluid">
                         </a>
                         <p th:text="${itemGroup.groupDesc}"></p>
                         <div class="price">

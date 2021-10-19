@@ -96,7 +96,7 @@
                 <div id="image-preview">
                   <button th:if="${itemGroupDto.imageSrc != null}" class="btn btn-danger btn-sm mt-3" type="submit" th:formaction="'/admin/edit-item-group?action=delete-image'">[[ #{admin.editItemGroup.delete} ]]</button>
                   <br>
-                  <img th:if="${itemGroupDto.imageSrc != null}" th:src="@{${'/assets/item-groups/' + itemGroupDto.imageSrc}}" class="img-prev">
+                  <img th:if="${itemGroupDto.imageSrc != null}" th:src="|data:image/png;base64,${itemGroupDto.imageSrc}|" class="img-prev">
                 </div>
               </div>
 
